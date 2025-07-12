@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cigar Product Conversion App</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+            min-height: 100vh; /* Full viewport height */
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px; /* Slightly wider to accommodate instructions */
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+
+        .field-group {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .field-group label {
+            flex: 1 1 150px; /* Label takes up to 150px or wraps */
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1em;
+        }
+
+        .field-group input[type="number"],
+        .field-group .result-display {
+            flex: 2 1 200px; /* Input/result takes up to 200px or stretches */
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1.1em;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            color: #555;
+        }
+
+        .field-group .result-display {
+            background-color: #e9ecef;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #007bff; /* Highlight result color */
+        }
+        /* Specific styling for profit fields to make them stand out if desired */
+        .field-group .profit-display {
+            background-color: #e6ffe6; /* Lighter green background */
+            color: #008000; /* Darker green text */
+        }
+
+
+        .field-group .result-display span {
+            flex-grow: 1; /* Make the number span take up available space */
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end; /* Align to the right */
+            margin-top: 25px;
+        }
+
+        .reset-btn, .copy-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.2s;
+            white-space: nowrap; /* Prevent button text from wrapping */
+        }
+
+        .copy-btn {
+            margin-left: 10px;
+            background-color: #28a745; /* Green for copy */
+            color: white;
+        }
+
+        .copy-btn:hover {
+            background-color: #218838;
+        }
+
+        .reset-btn {
+            background-color: #dc3545; /* Red for reset */
+            color: white;
+            margin-right: 15px; /* Space from copy button if they were side-by-side */
+        }
+
+        .reset-btn:hover {
+            background-color: #c82333;
+        }
+
+        .copy-message {
+            position: absolute;
+            bottom: -25px; /* Position below the field */
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #28a745;
+            font-size: 0.8em;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .copy-message.show {
+            opacity: 1;
+        }
+
+        .info-text {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: -10px; /* Pull it closer to the field above */
+            margin-bottom: 15px;
+            margin-left: 165px; /* Indent to align with input field */
+        }
+
+        /* How to Use Section Styling */
+        .how-to-use {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border: 1px solid #ddd;
+        }
+
+        .how-to-use h2 {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+        }
+
+        .how-to-use ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .how-to-use li {
+            margin-bottom: 10px;
+            line-height: 1.4;
+            font-size: 0.95em;
+        }
+
+        .highlight-calc {
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .highlight-copy {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            .field-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .field-group label {
+                flex: none;
+                width: 100%;
+                margin-bottom: 5px;
+                margin-right: 0;
+            }
+            .field-group input[type="number"],
+            .field-group .result-display {
+                flex: none;
+                width: 100%;
+            }
+            .field-group .result-display {
+                flex-direction: row; /* Keep row for result + button */
+            }
+            .copy-btn {
+                margin-left: 5px;
+                padding: 8px 12px;
+                font-size: 0.8em;
+            }
+            .info-text {
+                margin-left: 0; /* Reset indent on small screens */
+            }
+            .action-buttons {
+                justify-content: center; /* Center buttons on small screens */
+                margin-top: 20px;
+            }
+            .reset-btn {
+                margin-right: 5px; /* Adjust spacing between buttons if any */
+            }
+        }
+    </style>
+    <link rel="manifest" href="manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => console.log('SW registered: ', registration))
+                    .catch(registrationError => console.log('SW registration failed: ', registrationError));
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Cigar Product Conversion App</h1>
+
+        <div class="field-group">
+            <label for="boxCost">Cigar Box Cost:</label>
+            <input type="number" id="boxCost" step="0.01" min="0" required>
+        </div>
+
+        <div class="field-group">
+            <label for="markupPercentage">% Markup:</label>
+            <input type="number" id="markupPercentage" step="1" min="0" required value="40">
+        </div>
+        <p class="info-text">(Enter as whole number, e.g., 40 for 40% markup)</p>
+
+        <div class="field-group">
+            <label>Cigar Box Sale Price:</label>
+            <div class="result-display">
+                <span id="boxSalePrice">$0.00</span>
+                <button class="copy-btn" data-target="boxSalePrice" data-value-only="true">Copy</button>
+                <div class="copy-message" id="boxSalePriceCopyMessage">Copied!</div>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label>Box Sale Price (for Stick):</label>
+            <div class="result-display">
+                <span id="boxSalePriceForStick">$0.00</span>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label for="numSticks">Sticks Per Box:</label>
+            <input type="number" id="numSticks" step="1" min="1" required>
+        </div>
+
+        <div class="field-group">
+            <label>Stick Sale Price:</label>
+            <div class="result-display">
+                <span id="stickSalePrice">$0.00</span>
+                <button class="copy-btn" data-target="stickSalePrice" data-value-only="true">Copy</button>
+                <div class="copy-message" id="stickSalePriceCopyMessage">Copied!</div>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label>Per Box Profit:</label>
+            <div class="result-display profit-display">
+                <span id="perBoxProfit">$0.00</span>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label>Profit Per Stick:</label>
+            <div class="result-display profit-display">
+                <span id="profitPerStick">$0.00</span>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="reset-btn" id="resetButton">Reset Inputs</button>
+        </div>
+
+        <div class="how-to-use">
+            <h2>How to Use This App</h2>
+            <ol>
+                <li>Enter the cost of the cigar box in the <span class="highlight-calc">Cigar Box Cost</span> field.</li>
+                <li>Adjust the <span class="highlight-calc">% Markup</span> if needed (default is 40%).</li>
+                <li>Enter the <span class="highlight-calc">Sticks Per Box</span> quantity.</li>
+                <li>The app automatically calculates the <span class="highlight-calc">Cigar Box Sale Price</span> and <span class="highlight-calc">Stick Sale Price</span> based on your inputs and custom rounding rules. Both these prices are rounded up to the nearest 5 cents.</li>
+                <li>The <span class="highlight-calc">Per Box Profit</span> and <span class="highlight-calc">Profit Per Stick</span> are also calculated automatically.</li>
+                <li>Use the <span class="highlight-copy">Copy</span> buttons next to the calculated prices to quickly copy the price (without the '$' sign) for use in other applications.</li>
+                <li>Click the <span class="highlight-calc">Reset Inputs</span> button to clear the input fields and start a new calculation.</li>
+            </ol>
+        </div>
+
+    </div>
+
+    <script>
+        // Service Worker registration (used for PWA functionality)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Ensure the service worker path is correct relative to where you host the app
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => console.log('SW registered: ', registration))
+                    .catch(registrationError => console.log('SW registration failed: ', registrationError));
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const boxCostInput = document.getElementById('boxCost');
+            const markupPercentageInput = document.getElementById('markupPercentage');
+            const numSticksInput = document.getElementById('numSticks');
+            const resetButton = document.getElementById('resetButton');
+
+            const boxSalePriceDisplay = document.getElementById('boxSalePrice');
+            const boxSalePriceForStickDisplay = document.getElementById('boxSalePriceForStick');
+            const stickSalePriceDisplay = document.getElementById('stickSalePrice');
+
+            // NEW: Profit display elements
+            const perBoxProfitDisplay = document.getElementById('perBoxProfit');
+            const profitPerStickDisplay = document.getElementById('profitPerStick');
+
+            const copyButtons = document.querySelectorAll('.copy-btn');
+
+            // Helper function to round up to the nearest 5 cents (0.05)
+            function roundUpToNearest5Cents(value) {
+                return Math.ceil(value * 20) / 20; // 1 dollar = 100 cents, 100/5 = 20
+            }
+
+            // Calculation logic
+            function calculatePrices() {
+                const boxCost = parseFloat(boxCostInput.value);
+                const markupPercentage = parseFloat(markupPercentageInput.value);
+                const numSticks = parseFloat(numSticksInput.value);
+
+                // Ensure markupPercentage always has a value for calculations, defaulting to 40 if cleared
+                let actualMarkup = isNaN(markupPercentage) || markupPercentage < 0 ? 0 : markupPercentage;
+
+                // Set all displays to default if core inputs are invalid or incomplete
+                if (isNaN(boxCost) || boxCost < 0 || isNaN(numSticks) || numSticks <= 0) {
+                    boxSalePriceDisplay.textContent = '$0.00';
+                    boxSalePriceDisplay.dataset.value = '0.00';
+                    boxSalePriceForStickDisplay.textContent = '$0.00';
+                    stickSalePriceDisplay.textContent = '$0.00';
+                    stickSalePriceDisplay.dataset.value = '0.00';
+                    perBoxProfitDisplay.textContent = '$0.00'; // Clear profit
+                    profitPerStickDisplay.textContent = '$0.00'; // Clear profit
+                    return;
+                }
+
+                // 1. Cigar Box Sale Price
+                // Calculation: boxCost * (1 + markupPercentage / 100)
+                // Rounding: Round UP to the nearest 5 cents only.
+                let rawBoxSalePrice = boxCost * (1 + (actualMarkup / 100));
+                let finalBoxSalePrice = roundUpToNearest5Cents(rawBoxSalePrice);
+
+                boxSalePriceDisplay.textContent = `$${finalBoxSalePrice.toFixed(2)}`;
+                boxSalePriceDisplay.dataset.value = finalBoxSalePrice.toFixed(2); // Store raw value for copy
+
+                // 2. Box Sale Price (for Calculating Stick Pricing)
+                const boxSalePriceForStick = finalBoxSalePrice + 5.00;
+                boxSalePriceForStickDisplay.textContent = `$${boxSalePriceForStick.toFixed(2)}`;
+
+                // 3. Stick Sale Price
+                const rawStickSalePrice = boxSalePriceForStick / numSticks;
+                const stickSalePrice = roundUpToNearest5Cents(rawStickSalePrice);
+                stickSalePriceDisplay.textContent = `$${stickSalePrice.toFixed(2)}`;
+                stickSalePriceDisplay.dataset.value = stickSalePrice.toFixed(2); // Store raw value for copy
+
+                // NEW: Calculate Profits
+                const perBoxProfit = finalBoxSalePrice - boxCost;
+                perBoxProfitDisplay.textContent = `$${perBoxProfit.toFixed(2)}`;
+
+                const costPerStick = boxCost / numSticks;
+                const profitPerStick = stickSalePrice - costPerStick;
+                profitPerStickDisplay.textContent = `$${profitPerStick.toFixed(2)}`;
+            }
+
+            // Function to reset input fields
+            function resetInputs() {
+                boxCostInput.value = '';
+                markupPercentageInput.value = '40'; // Reset to default 40
+                numSticksInput.value = '';
+                calculatePrices(); // Recalculate to clear results and apply new defaults
+            }
+
+            // Attach event listeners
+            boxCostInput.addEventListener('input', calculatePrices);
+            markupPercentageInput.addEventListener('input', calculatePrices);
+            numSticksInput.addEventListener('input', calculatePrices);
+            resetButton.addEventListener('click', resetInputs);
+
+            // Attach click listeners to copy buttons
+            copyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    const targetElement = document.getElementById(targetId);
+                    // Use data-value which stores the number without '$' sign
+                    const valueToCopy = targetElement.dataset.value;
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(valueToCopy)
+                            .then(() => {
+                                const messageElement = document.getElementById(`${targetId}CopyMessage`);
+                                if (messageElement) {
+                                    messageElement.classList.add('show');
+                                    setTimeout(() => {
+                                        messageElement.classList.remove('show');
+                                    }, 1500); // Hide after 1.5 seconds
+                                }
+                                console.log(`Copied: ${valueToCopy}`); // Use console.log for debugging
+                            })
+                            .catch(err => {
+                                console.error('Failed to copy: ', err);
+                                alert('Failed to copy. Please try manually.');
+                            });
+                    } else {
+                        // Fallback for older browsers
+                        const tempInput = document.createElement('textarea');
+                        tempInput.value = valueToCopy;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                        alert('Copied the value: ' + valueToCopy);
+                    }
+                });
+            });
+
+            // Initial calculation when the page loads to display default prices based on the 40% markup
+            calculatePrices();
+        });
+    </script>
+</body>
+</html>
