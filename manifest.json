@@ -2,7 +2,7 @@
   "name": "Cigar Conv. App",
   "short_name": "Cigar Conv.",
   "description": "Calculate cigar box and stick prices with markup and custom rounding.",
-  "start_url": "./cigar-conversion-app.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f4f7f6",
   "theme_color": "#2c3e50",
